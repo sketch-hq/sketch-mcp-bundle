@@ -1,6 +1,6 @@
 # Sketch MCP
 
-The official Sketch MCP Bundle that allows AI clients to interact with your designs.
+The official Sketch MCP server that allows AI clients to interact with your designs.
 
 > [!NOTE]
-> Please ensure that Sketch is running and [the _MCP Server_ option](https://www.sketch.com/docs/mcp-server/) is turned on prior to calling this server.
+> This server communicates with the Sketch app, so please ensure the app is running and [the MCP Server option](https://www.sketch.com/docs/mcp-server/) is turned on.
