@@ -12,6 +12,7 @@
   "documentation": "https://www.sketch.com/docs/mcp-server/",
   "support": "https://www.sketch.com/support/",
   "privacy_policies": ["https://www.sketch.com/privacy/"],
+  "icon": "assets/icons/icon-1024-light.png",
   "server": {
     "type": "node",
     "entry_point": "server/index.js",
