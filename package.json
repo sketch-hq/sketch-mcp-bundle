@@ -1,0 +1,23 @@
+{
+  "name": "sketch-mcp",
+  "version": "2.0.0",
+  "description": "Exposes MCP tools for inspection, analysis, and modification of Sketch documents.",
+  "type": "module",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
+  },
+  "keywords": [
+    "mcp",
+    "sketch"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^3.5.3"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.28.0"
+  }
+}

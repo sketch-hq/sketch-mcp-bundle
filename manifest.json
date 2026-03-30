@@ -1,0 +1,33 @@
+{
+  "manifest_version": "0.3",
+  "name": "sketch-mcp",
+  "display_name": "Sketch MCP",
+  "version": "2.0.0",
+  "description": "Exposes MCP tools for inspection, analysis, and modification of Sketch documents.",
+  "author": {
+    "name": "Sketch B.V.",
+    "url": "https://sketch.com"
+  },
+  "homepage": "https://sketch.com",
+  "documentation": "https://www.sketch.com/docs/mcp-server/",
+  "support": "https://www.sketch.com/support/",
+  "privacy_policies": ["https://www.sketch.com/privacy/"],
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/index.js"],
+      "env": {}
+    }
+  },
+  "tools_generated": true,
+  "keywords": ["mcp", "sketch"],
+  "license": "MIT",
+  "compatibility": {
+    "platforms": ["darwin"],
+    "runtimes": {
+      "node": ">=22.0.0"
+    }
+  }
+}
