@@ -1,7 +1,7 @@
 {
   "manifest_version": "0.3",
   "name": "sketch-mcp",
-  "display_name": "Sketch MCP",
+  "display_name": "Sketch",
   "version": "2.0.0",
   "description": "Exposes MCP tools for inspection, analysis, and modification of Sketch documents.",
   "author": {
