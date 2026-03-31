@@ -21,6 +21,8 @@ The official Sketch MCP server that allows AI clients to interact with your desi
 
 ## Development
 
+From a technical standpoint this is an stdio MCP server that simply forwards messages to and from the local Streamable HTTP MCP server that is part of the Sketch Mac app. This "proxy" server is needed for clients like Claude Desktop that only support stdio and _encrypted_ (HTTPS) remote MCPs.
+
 ### Setup
 
 ```bash
