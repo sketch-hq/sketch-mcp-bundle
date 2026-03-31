@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node server/index.js",
     "format": "prettier . --write",
-    "format:check": "prettier . --check"
+    "format:check": "prettier . --check",
+    "pack": "mcpb pack . sketch.mcpb && mcpb clean sketch.mcpb"
   },
   "keywords": [
     "mcp",
