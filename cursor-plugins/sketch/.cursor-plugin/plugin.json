@@ -1,0 +1,16 @@
+{
+  "name": "sketch",
+  "displayName": "Sketch",
+  "version": "2.0.0",
+  "description": "Connect to Sketch's local MCP server to explore your designs, organize your documents, generate code, export assets, and more.",
+  "author": {
+    "name": "Sketch B.V.",
+    "url": "https://sketch.com"
+  },
+  "logo": "assets/icons/icon-512-light.png",
+  "homepage": "https://sketch.com",
+  "repository": "https://github.com/sketch-hq/sketch-mcp-bundle",
+  "keywords": ["mcp", "sketch"],
+  "skills": "./skills",
+  "mcpServers": "./mcp.json"
+}
