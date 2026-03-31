@@ -1,0 +1,3 @@
+[submodule "external/sketch-hq/skills"]
+	path = external/sketch-hq/skills
+	url = git@github.com:sketch-hq/skills.git
