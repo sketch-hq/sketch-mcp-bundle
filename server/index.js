@@ -9,91 +9,128 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 
-const REMOTE_MCP_URL = new URL("http://localhost:31126/mcp");
+const SKETCH_MCP_URL = new URL("http://localhost:31126/mcp");
+const SKETCH_NOT_RUNNING_ERROR_MESSAGE =
+  "Error: This is a fallback response because the Sketch MCP server is not available. Either Sketch is not running or its MCP Server is not yet enabled. Explain the situation to the user and direct them to this help article: https://www.sketch.com/docs/mcp-server/. Mention that they might need to restart Claude after starting Sketch and enabling the MCP Server to get the full functionality.";
+const PLACEHOLDER_TOOL_DESCRIPTION_MESSAGE =
+  "This is a placeholder tool description provided while the Sketch MCP server is not available. Try to re-fetch the tool list after the user has started Sketch and enabled the MCP Server";
 
-const remoteClient = new Client({
-  name: "sketch-mcp-bridge",
-  version: "2.0.0",
-});
-
-let remoteTransport;
-let remoteConnected = false;
 let proxyServer;
 
-async function ensureRemoteConnection() {
-  if (remoteConnected) {
-    return;
+async function withSketchClient(callback) {
+  const transport = new StreamableHTTPClientTransport(SKETCH_MCP_URL);
+  const client = new Client({
+    name: "sketch-mcp-bridge",
+    version: "2.1.0",
+  });
+  try {
+    await client.connect(transport);
+    return await callback(client);
+  } finally {
+    await transport.close().catch(() => {});
   }
-
-  remoteTransport = new StreamableHTTPClientTransport(REMOTE_MCP_URL);
-  remoteTransport.onerror = (error) => {
-    console.error("MCP transport error from Sketch:", error);
-  };
-  remoteTransport.onclose = () => {
-    remoteConnected = false;
-  };
-
-  await remoteClient.connect(remoteTransport);
-  remoteConnected = true;
 }
 
-function createProxyServer() {
-  const remoteInfo = remoteClient.getServerVersion();
-  const remoteInstructions = remoteClient.getInstructions();
-  const remoteCapabilities = remoteClient.getServerCapabilities();
+async function createProxyServer() {
+  let info;
+  let capabilities;
+
+  try {
+    await withSketchClient((sketch) => {
+      info = sketch.getServerVersion();
+      capabilities = sketch.getServerCapabilities();
+    });
+  } catch (error) {
+    // If we fail to connect to Sketch, we still want to start the proxy server, just with placeholder info
+    console.error("Failed to connect to Sketch MCP server:", error);
+    info = {
+      name: "SketchMCP",
+      version: "2.0.0",
+    };
+    capabilities = {
+      tools: {
+        listChanged: false,
+      },
+    };
+  }
 
   const server = new Server(
     {
-      name: remoteInfo.name,
-      version: remoteInfo.version,
+      name: info.name,
+      version: info.version,
     },
     {
-      capabilities: {
-        tools: remoteCapabilities.tools,
-      },
-      instructions: remoteInstructions,
+      capabilities,
     },
   );
 
   server.setRequestHandler(ListToolsRequestSchema, async () => {
-    await ensureRemoteConnection();
-    return remoteClient.listTools();
+    try {
+      return await withSketchClient((sketch) => sketch.listTools());
+    } catch (error) {
+      // Returning a placeholder list of tools e.g. when Sketch is not running
+      return {
+        tools: [
+          {
+            name: "run_code",
+            description: `Run ECMAScript 2020 Sketch plugin scripts. (${PLACEHOLDER_TOOL_DESCRIPTION_MESSAGE})`,
+            inputSchema: {
+              type: "object",
+              properties: {},
+            },
+          },
+          {
+            name: "get_selection_as_image",
+            description: `Returns a visual representation of currently selected Sketch layers as a PNG image. (${PLACEHOLDER_TOOL_DESCRIPTION_MESSAGE})`,
+            inputSchema: {
+              type: "object",
+              properties: {},
+            },
+          },
+        ],
+      };
+    }
   });
 
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
-    await ensureRemoteConnection();
-
-    return remoteClient.callTool({
-      name: request.params.name,
-      arguments: request.params.arguments,
-    });
+    try {
+      return await withSketchClient((sketch) =>
+        sketch.callTool({
+          name: request.params.name,
+          arguments: request.params.arguments,
+        }),
+      );
+    } catch (error) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: SKETCH_NOT_RUNNING_ERROR_MESSAGE,
+          },
+        ],
+      };
+    }
   });
 
   return server;
 }
 
 async function main() {
-  await ensureRemoteConnection();
-  proxyServer = createProxyServer();
+  proxyServer = await createProxyServer();
 
   const transport = new StdioServerTransport();
   await proxyServer.connect(transport);
 }
 
 main().catch(async (error) => {
-  console.error("Proxy server error:", error);
-
-  if (remoteTransport) {
-    await remoteTransport.close().catch(() => {});
-  }
+  console.error("Fatal server bootstrap error:", error);
+  await proxyServer?.close().catch(() => {});
 
   process.exit(1);
 });
 
 process.on("SIGINT", async () => {
-  if (remoteTransport) {
-    await remoteTransport.close().catch(() => {});
-  }
+  await proxyServer?.close().catch(() => {});
 
   process.exit(0);
 });
