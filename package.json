@@ -1,6 +1,6 @@
 {
   "name": "sketch-mcp",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Exposes MCP tools for inspection, analysis, and modification of Sketch documents.",
   "type": "module",
   "main": "server/index.js",
