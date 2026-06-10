@@ -45,7 +45,7 @@ async function createProxyServer() {
     console.error("Failed to connect to Sketch MCP server:", error);
     info = {
       name: "SketchMCP",
-      version: "2.0.0",
+      version: "2.1.0",
     };
     capabilities = {
       tools: {

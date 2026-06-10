@@ -1,7 +1,7 @@
 {
   "name": "sketch",
   "displayName": "Sketch",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Connect to Sketch's local MCP server to explore your designs, organize your documents, generate code, export assets, and more.",
   "author": {
     "name": "Sketch B.V.",
