@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "sketch": {
+      "url": "http://localhost:31126/mcp",
+      "type": "http"
+    }
+  }
+}
